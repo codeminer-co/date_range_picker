@@ -81,7 +81,7 @@ class _DatePickerHeader extends StatelessWidget {
     final TextTheme headerTextTheme = themeData.primaryTextTheme;
     Color? dayColor;
     Color? yearColor;
-    switch (themeData.primaryColorBrightness) {
+    switch (themeData.brightness) {
       case Brightness.light:
         dayColor = mode == DatePickerMode.day ? Colors.black87 : Colors.black54;
         yearColor =
@@ -93,9 +93,9 @@ class _DatePickerHeader extends StatelessWidget {
         break;
     }
     final TextStyle dayStyle =
-        headerTextTheme.display1!.copyWith(color: dayColor, height: 1.4);
+        headerTextTheme.headlineMedium!.copyWith(color: dayColor, height: 1.4);
     final TextStyle yearStyle =
-        headerTextTheme.subhead!.copyWith(color: yearColor, height: 1.4);
+        headerTextTheme.headlineSmall!.copyWith(color: yearColor, height: 1.4);
 
     Color? backgroundColor;
     switch (themeData.brightness) {
@@ -103,7 +103,7 @@ class _DatePickerHeader extends StatelessWidget {
         backgroundColor = themeData.primaryColor;
         break;
       case Brightness.dark:
-        backgroundColor = themeData.backgroundColor;
+        backgroundColor = themeData.primaryColorDark;
         break;
     }
 
@@ -437,7 +437,7 @@ class DayPicker extends StatelessWidget {
     final int firstDayOffset =
         _computeFirstDayOffset(year, month, localizations);
     final List<Widget> labels = <Widget>[];
-    labels.addAll(_getDayHeaders(themeData.textTheme.caption, localizations));
+    labels.addAll(_getDayHeaders(themeData.textTheme.bodySmall, localizations));
     for (int i = 0; true; i += 1) {
       // 1-based day of month, e.g. 1-31 for January, and 1-29 for February on
       // a leap year.
@@ -452,7 +452,7 @@ class DayPicker extends StatelessWidget {
             (selectableDayPredicate != null &&
                 !selectableDayPredicate!(dayToBuild));
         BoxDecoration? decoration;
-        TextStyle? itemStyle = themeData.textTheme.body1;
+        TextStyle? itemStyle = themeData.textTheme.bodySmall;
         final bool isSelectedFirstDay = selectedFirstDate.year == year &&
             selectedFirstDate.month == month &&
             selectedFirstDate.day == day;
@@ -467,39 +467,39 @@ class DayPicker extends StatelessWidget {
             : null;
         if (isSelectedFirstDay &&
             (isSelectedLastDay == null || isSelectedLastDay)) {
-          itemStyle = themeData.accentTextTheme.body2;
+          itemStyle = themeData.textTheme.bodySmall;
           decoration = new BoxDecoration(
-              color: themeData.accentColor, shape: BoxShape.circle);
+              color: themeData.colorScheme.primary, shape: BoxShape.circle);
         } else if (isSelectedFirstDay) {
           // The selected day gets a circle background highlight, and a contrasting text color.
-          itemStyle = themeData.accentTextTheme.body2;
+          itemStyle = themeData.textTheme.bodySmall;
           decoration = new BoxDecoration(
-              color: themeData.accentColor,
+              color: themeData.colorScheme.primary,
               borderRadius: BorderRadius.only(
                 topLeft: new Radius.circular(50.0),
                 bottomLeft: new Radius.circular(50.0),
               ));
         } else if (isSelectedLastDay != null && isSelectedLastDay) {
-          itemStyle = themeData.accentTextTheme.body2;
+          itemStyle = themeData.textTheme.bodySmall;
           decoration = new BoxDecoration(
-              color: themeData.accentColor,
+              color: themeData.colorScheme.primary,
               borderRadius: BorderRadius.only(
                 topRight: new Radius.circular(50.0),
                 bottomRight: new Radius.circular(50.0),
               ));
         } else if (isInRange != null && isInRange) {
           decoration = new BoxDecoration(
-              color: themeData.accentColor.withOpacity(0.1),
+              color: themeData.colorScheme.primary.withOpacity(0.1),
               shape: BoxShape.rectangle);
         } else if (disabled) {
-          itemStyle = themeData.textTheme.body1!
+          itemStyle = themeData.textTheme.bodySmall!
               .copyWith(color: themeData.disabledColor);
         } else if (currentDate.year == year &&
             currentDate.month == month &&
             currentDate.day == day) {
           // The current day gets a different text color.
-          itemStyle =
-              themeData.textTheme.body2!.copyWith(color: themeData.accentColor);
+          itemStyle = themeData.textTheme.bodySmall!
+              .copyWith(color: themeData.colorScheme.primary);
         }
 
         Widget dayWidget = new Container(
@@ -561,7 +561,7 @@ class DayPicker extends StatelessWidget {
               child: new ExcludeSemantics(
                 child: new Text(
                   localizations.formatMonthYear(displayedMonth),
-                  style: themeData.textTheme.subhead,
+                  style: themeData.textTheme.headlineSmall,
                 ),
               ),
             ),
@@ -741,8 +741,8 @@ class _MonthPickerState extends State<MonthPicker>
     if (!_isDisplayingLastMonth) {
       SemanticsService.announce(
           localizations.formatMonthYear(_nextMonthDate), textDirection);
-      _dayPickerController!.nextPage(
-          duration: _kMonthScrollDuration, curve: Curves.ease);
+      _dayPickerController!
+          .nextPage(duration: _kMonthScrollDuration, curve: Curves.ease);
     }
   }
 
@@ -750,8 +750,8 @@ class _MonthPickerState extends State<MonthPicker>
     if (!_isDisplayingFirstMonth) {
       SemanticsService.announce(
           localizations.formatMonthYear(_previousMonthDate), textDirection);
-      _dayPickerController!.previousPage(
-          duration: _kMonthScrollDuration, curve: Curves.ease);
+      _dayPickerController!
+          .previousPage(duration: _kMonthScrollDuration, curve: Curves.ease);
     }
   }
 
@@ -941,7 +941,7 @@ class _YearPickerState extends State<YearPicker> {
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterial(context));
     final ThemeData themeData = Theme.of(context);
-    final TextStyle? style = themeData.textTheme.body1;
+    final TextStyle? style = themeData.textTheme.bodySmall;
     return new ListView.builder(
       controller: scrollController,
       itemExtent: _itemExtent,
@@ -952,8 +952,8 @@ class _YearPickerState extends State<YearPicker> {
             (widget.selectedLastDate != null &&
                 year == widget.selectedLastDate!.year);
         final TextStyle? itemStyle = isSelected
-            ? themeData.textTheme.headline!
-                .copyWith(color: themeData.accentColor)
+            ? themeData.textTheme.headlineSmall!
+                .copyWith(color: themeData.colorScheme.primary)
             : style;
         return new InkWell(
           key: new ValueKey<int>(year),
@@ -1053,6 +1053,8 @@ class _DatePickerDialogState extends State<_DatePickerDialog> {
         break;
       case TargetPlatform.iOS:
         break;
+      default:
+        break;
     }
   }
 
@@ -1126,7 +1128,7 @@ class _DatePickerDialogState extends State<_DatePickerDialog> {
           selectableDayPredicate: widget.selectableDayPredicate,
         );
       case DatePickerMode.year:
-        return  YearPicker(
+        return YearPicker(
           key: _pickerKey,
           selectedFirstDate: _selectedFirstDate!,
           selectedLastDate: _selectedLastDate,
@@ -1134,6 +1136,8 @@ class _DatePickerDialogState extends State<_DatePickerDialog> {
           firstDate: widget.firstDate!,
           lastDate: widget.lastDate!,
         );
+      default:
+        return null;
     }
     return null;
   }
@@ -1151,11 +1155,11 @@ class _DatePickerDialogState extends State<_DatePickerDialog> {
       data: ButtonBarThemeData(),
       child: new ButtonBar(
         children: <Widget>[
-          new FlatButton(
+          new TextButton(
             child: new Text(localizations.cancelButtonLabel),
             onPressed: _handleCancel,
           ),
-          new FlatButton(
+          new TextButton(
             child: new Text(localizations.okButtonLabel),
             onPressed: _handleOk,
           ),
